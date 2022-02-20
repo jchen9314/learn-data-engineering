@@ -10,6 +10,11 @@
   curl [options] [URL...]
   ```
 
+  - `curl -sSL`:
+    - `-s` = `--silent`:  do not show progress meter or error messages
+    - `-S` = `--show-error`: show an error message if it fails
+    - `-L` = `--Location`: If the server reports that the requested page has moved to a different location (indicated with a Location: header and a 3XX response code), this option will make curl redo the request on the new place
+
 - `mkdir`
   - `-p`: mkdir -p command you can create sub-directories of a directory
 
