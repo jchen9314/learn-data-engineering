@@ -1,4 +1,4 @@
-# Data Warehousing (DW)
+# Data Warehouse(DW)
 
 ## OLTP/OLAP
 
@@ -8,6 +8,80 @@
 | Data updates | Short, fast updates, ACID | Refreshes periodically, scheduled batch processing |
 | DB design | Normalized DB for efficiency | Denormalized DB for downstream analysis (dimensional model) |
 | Space requirements | Generally small if historical data is archived | Generally large due to aggregating large data |
+
+## Data Normalization
+
+- normalization
+  - organize data in database and part of modelling process
+  - splits large tables into smaller ones and joins them together using relationships
+  - reduce data anomalies and redundancies, improve data integrtiy
+- functional dependency
+  - each table only represents one area
+  - each other columns depends on PK
+  - composite keys can also create functional dependency
+- 1st normal form
+  - must have a PK
+  - should only hold single valued attribute
+  - must be atomic (value cannot be subdivided): (name -> first_name, last_name)
+  - no repeating groups
+- 2nd normal form
+  - should be in 1NF
+  - all non-key columns depends on PK
+  - should not contain partial dependencies
+    - pd: an attribute depends only part of a PK
+    - order_date, shipping details depends only on order_id
+
+      ![](../img/dw-2nf.png)
+
+- 3rd normal form (OLTP)
+  - must be in 2NF
+  - eliminate columns not dependent on PK
+  - should not have transitive dependency
+    - non-prime attibute depends on other non-prime attributes
+
+## Pros/cons of Normalized Model
+
+- Pros
+  - reduce data redundancy
+  - reduce size in storage
+  - no data duplications
+  - easy to maintain and make changes
+- Cons
+  - slow performance due to multiple joins
+  - not for analytical purposes
+
+## Denormalization
+
+- optimization tech to speed up data retrieval
+- requires adding redundancy to various tables
+- techniques
+  - add redundant columns
+    - used for frequently accessed columns with large joins (avoid joins)
+  - store derived columns (may need to have frequent update)
+  - pre-joining tables
+  
+## Pros/cons of Denormalized Model
+
+- pros
+  - improve performance
+  - less compute required
+  - accelerate reporting
+  - good for analytics
+- cons
+  - large storage size
+  - less flexible
+  - insert/updates can be complicated & expensive
+
+## Normalization vs Denormalization
+
+| Normalization | Denormalization |
+|:---|:---|
+| OLTP | OLAP |
+| remove redundancy | add redundancy |
+| reduce inconsistency | potential inconsistency |
+| require more joins | less joins |
+| complex data model | simpler data model |
+| **faster data write** | **faster data read** |
 
 ## Characteristic of DW
 
