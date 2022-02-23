@@ -22,7 +22,7 @@
 
 ```py
 def soln(nums):
-    # boundary condition
+    # corner cases
     if nums is None or len(nums) == 0:
         return 0
     

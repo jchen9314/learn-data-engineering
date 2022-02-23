@@ -53,6 +53,50 @@ arr.index(666)
 arr.sort() # inplace operation, doesn't assign a variable
 ```
 
+### Linked List
+
+- chained storage, not continuous
+- needs pointer points to the next element
+  - easy to delete or insert an element: O(1)
+
+- operations
+
+  - access: O(N)
+  - search: O(N)
+  - insert/delete: O(1)
+
+- operations implemented in python
+  
+```py
+# 1. create a linked list
+from collections import deque
+ll = deque()
+
+# 2. add element
+ll.append(1) # O(1)
+ll.append(2)
+ll.append(3)
+
+# O(N), first search position then insert the value
+ll.insert(2, 99)
+
+# 3. access an element
+ll[2] # O(N)
+
+# 4. search an element
+ll.index(99) # O(N)
+
+# 5. update an element
+ll[2] = 88 # O(N)
+
+# 6. delete an element: O(N)
+ll.remove(88) 
+del ll[2]
+
+# 7. length
+len(ll) # O(1)
+```
+
 ## Reference
 
 1. https://github.com/labuladong/fucking-algorithm/blob/english/think_like_computer/Framework%20and%20thoughts%20about%20learning%20data%20structure%20and%20algorithm.md
