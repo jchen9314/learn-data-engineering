@@ -211,7 +211,62 @@
 | maintenance | high-maintenance due to on-premise solutions | low-maintenance due to cloud solution |
 | data governance & security | removes PII before load | option to remove PII before load but require more work; PII is removed after load |
 
+## Data Model and Data Modeling
 
+- data model: act as a blueprint, specify business requirements and data structures, provide visual way to communicatee with business at various level
+- data modeling: structured approach to develop a data model by identifying and analyzing all the requirements
+- data modeling workflow:
+  1. identify business requirements
+  2. collaborate with business: interviews, meetings, review existing processes
+  3. define ERD notation, define data model type
+  4. define data modeling method
+  5. develop and deploy
+
+## ERD Notation
+
+- create a visual representation of entities and attributes
+- provides preview of how tables should connect
+- 3 components
+  - Entity: the object from where data is collected (table)
+  - Attribute: entity properties that can be identifiers or descriptor (column)
+  - Relationship: the connection between entities
+- styles (IE, Chen, Barker, UML)
+  - IE:
+    - most widely used
+    - use lines with symbils to indicate relationships
+    - use crow foot notation to represent cardinality
+
+    ![IE data model](https://conceptdraw.com/a1003c4/p1/preview/640/pict--erd-data-model-in-ie)
+
+  - Chen:
+    - not widely used
+    - use different shapes and text values to explain the relationships
+
+    ![chen notation data model](https://vertabelo.com/blog/chen-erd-notation/chen-notation-book-and-chapter-schema-3.png)
+
+- IE vs Chen
+  - entity:
+    - IE: no weak entity representation
+    - chen: have weak entity represented by double rectangle, whcih means it cannot be identified by its attributes
+
+    ![IE vs Chen entity](https://images.slideplayer.com/20/5952332/slides/slide_5.jpg)
+
+  - cardinality:
+    - one-to-one
+      - one-and-only-one: `||` instead of `|`
+    - one-to-many
+    - many-to-one
+    - many-to-many
+      - better convert to either one-to-many/many-to-one (bridge tables)
+
+    ![IE vs Chen Relationship cardinality](https://i.stack.imgur.com/thblX.jpg)
+
+- create an ERD
+  1. identify entity
+  2. relationship
+  3. cardinality
+  4. attributes
+  
 ## Reference
 
 1. [Analytics-engineering-bootcamp](https://www.udemy.com/course/analytics-engineering-bootcamp/)
