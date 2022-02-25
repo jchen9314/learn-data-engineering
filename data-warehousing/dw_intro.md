@@ -222,6 +222,64 @@
   4. define data modeling method
   5. develop and deploy
 
+- 3 types of data model
+  - conceptual:
+    - act as a business requirement reference (high level)
+    - identify what data is used in business
+    - show entities and relationship
+    - no primary key or attributes
+  - logical: (business model)
+    - focus on business requirement, design of the data
+    - add more info to the conceptual model
+    - define PK, attributes, data type with coarse resolution
+  - physical:
+    - blueprint for developers
+    - denormalization can occur
+    - more details: tables, columns, PK/FK, cardinality, data types(lengths, nullable)
+
+  | feature | conceptual | logical | physical |
+  |:---|:---|:---|:---|
+  | entity name | Y | Y | Y |
+  | entity relationship | Y | Y | Y |
+  | attributes |  | Y | Y |
+  | table names |  |  | Y |
+  | column names |  |  | Y |
+  | column data types |  | Y | Y |
+  | primary keys |  | optional | Y |
+  | foreign keys |  | optional | Y |
+  | target audience | business | architect | developer |
+
+## Keys
+
+- uniquely identity a record in a table
+- types
+  - PK
+    - unique identifier
+    - cannot be NULL, must be unique
+    - candidate key
+    - works best if it's numeric or integer data type
+    - efficient for join, index, and sort
+  - candidate key
+    - any field that can be promoted to be PK
+    - should be unique and NOT NULL
+    - can have more than one CK in table
+  - composite key
+    - a type of PK
+    - concatenation oof multiple columns
+    - ensure uniqueness
+  - natural key
+    - a type of PK
+    - real data within a table, have business meaning
+    - eg. SSN, invoice number, etc
+  - surrogate key
+    - PK generated at runtime
+    - no business meaning but just unique identifier (numeric value, guaranteed to be unqiue)
+  - FK
+    - used to join 2 tables
+    - PK of parent entity
+    - table that contains FK is called child table
+    - FK enforces a referential integrity
+
 ## ERD Notation
 
 - create a visual representation of entities and attributes
@@ -236,21 +294,30 @@
     - use lines with symbils to indicate relationships
     - use crow foot notation to represent cardinality
 
-    ![IE data model](https://conceptdraw.com/a1003c4/p1/preview/640/pict--erd-data-model-in-ie)
+    ![IE notation data model](../img/ie-notation.png)
 
+    - pros: most widely used, easy to understand, works well for designing physical model
+    - cons: no standardization (lots of variation in notation)
   - Chen:
     - not widely used
     - use different shapes and text values to explain the relationships
+    - shapes:
+      - entity
+      - weak entity:
+        - rely on existence of another entity
+        - cannot be identified by its attributes
+        - doesn't have PK (usually take the PK of parent entity)
+      - relationship
+      - weak relationship
+      - attribute
+      - multivalued attribute
 
-    ![chen notation data model](https://vertabelo.com/blog/chen-erd-notation/chen-notation-book-and-chapter-schema-3.png)
+    ![chen notation data model](../img/chen-notation.png)
+
+    - pros: easy to draw, understand, good for teaching concepts
+    - cons: too busy to read, take more space, too much info provided (hard to understand at high level), not used much in industry
 
 - IE vs Chen
-  - entity:
-    - IE: no weak entity representation
-    - chen: have weak entity represented by double rectangle, whcih means it cannot be identified by its attributes
-
-    ![IE vs Chen entity](https://images.slideplayer.com/20/5952332/slides/slide_5.jpg)
-
   - cardinality:
     - one-to-one
       - one-and-only-one: `||` instead of `|`
@@ -266,7 +333,7 @@
   2. relationship
   3. cardinality
   4. attributes
-  
+
 ## Reference
 
 1. [Analytics-engineering-bootcamp](https://www.udemy.com/course/analytics-engineering-bootcamp/)
