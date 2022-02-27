@@ -1,6 +1,8 @@
 # Data Warehouse(DW)
 
-## OLTP/OLAP
+## DW Introduction
+
+### OLTP/OLAP
 
 |  | OLTP | OLAP |
 |:---|:---|:---|
@@ -8,6 +10,134 @@
 | Data updates | Short, fast updates, ACID | Refreshes periodically, scheduled batch processing |
 | DB design | Normalized DB for efficiency | Denormalized DB for downstream analysis (dimensional model) |
 | Space requirements | Generally small if historical data is archived | Generally large due to aggregating large data |
+
+### Characteristic of DW
+
+- subject-oriented
+  - focus on a subject
+  - not on operational day to day
+- integrated
+  - data from different sources
+  - data is uniformly transformed
+  - well-defined schema
+- time-variant
+  - data is organized in time periods
+  - contains element of time eitther implicitly or explicitly
+- non-volatile
+  - only loading and accessing data is allowed
+  - daat is refreshed att scheduled time
+
+### DW Architecture
+
+- single-tier
+  
+  ![](../img/dw-single-tier.png)
+
+  - all of source data is stored directly inside data warehouse layer
+  - pro: save data storage and reduce redundancies
+  - con: query data directly from dw that make BI tools slow down returning results
+- two-tier
+  
+  ![](../img/dw-two-tier.png)
+
+  - separate between sources and dw
+  - add data lake and staging layer before dw layer
+    - prevent dw being the main area of stored raw data
+    - data lake: single storage area for all source data
+    - staging layer: can do any transformation/cleaning before storing data in dw
+
+- three-tier
+  
+  ![](../img/dw-three-tier.png)
+
+  - add data mart layer
+    - enable BI insight through data mart layer
+    - model data to serve specific business purpose
+  - three-tier
+    - bottom tier: data source, data lake, staging
+    - middle tier: data warehouse layer, data mart layer
+    - top tier: BI tools/dashboards
+
+### Data Lake
+
+- single store of raw data, cost-effective storage
+- data can be structured, unstructed, images, log, etc.
+- data is in raw format
+- give us better data governance
+
+### 5V in Big Data
+
+- volume: large amount of data
+- velocity: speed of data processing
+- variety: different types of data
+- veracity: the level of trust in the data
+- value: the value within the data
+
+### DL vs DW
+
+|  | DL | DW |
+|:---|:---|:---|
+| Data Structure | Structured, unstructured, raw from all the available sources | Structured, processed data after applying transformation/clean up |
+| Users | DE, DS | BI developer, Analyst |
+| Schema-position | Schema-on-read | Schema-on-write |
+| Purpose | Location to store all raw data | Defined purpose for BI, reporting |
+| Storage | Low cost storage for large amount of data | Can be expensive to store large amounts of data |
+
+### Staging Layer
+
+- between data lake and dw
+- mutliple data source aggregated at staging layer
+- perform data cleaning, transformation, validations
+- storing data in this layer makes processing easier
+
+### DW Layer
+
+- transformed data from staging layer
+- data modelling (dimensional model, OBT, Data Vault)
+- data masking, PII data
+- optimization strategies
+- metadata info is also stored for data lineage
+
+### Data Mart
+
+- subset of DW
+- data is organized in small managable chunks
+- source data for BI
+
+### ETL
+
+- Extract
+  - extract data from the source
+  - data goes into a temporary or persistent storage area
+  - batch or streaming data
+  - data validation checks (format, null values, new columns etc.)
+- Transform: improve quality
+  - cleansing: solve and clean any inconsistency
+  - standardization: apply formatting rules
+  - deduplication: remove duplicates and redundancies
+  - verfication: flag anomalies and remove unusable data
+  - sorting: organize by type
+  - other tasks: other rules applied to improve data quality
+- Load
+  - load the transformed data into dw
+  - conduct data quality check during load
+  - recovery mechanism to handle load failure
+  - types
+    - full refresh load: load all data as fresh
+    - incremental load: scheduled at intervals
+
+### ETL vs ELT
+
+|  | ETL | ELT |
+|:---|:---|:---|
+| volume | small/medium data volume | large data volume |
+| load time | slow as transformation before loading to DW | fast loading as transformation happens later |
+| data type | structured data | structured & unstructured data |
+| complexity | compute-intensive & complex | less complex due to transformation within SQL |
+| cost | high | low |
+| availability | only required for reporting/analysis | everything can be accessed from DL |
+| maintenance | high-maintenance due to on-premise solutions | low-maintenance due to cloud solution |
+| data governance & security | removes PII before load | option to remove PII before load but require more work; PII is removed after load |
 
 ## Data Normalization
 
@@ -39,7 +169,7 @@
   - should not have transitive dependency
     - non-prime attibute depends on other non-prime attributes
 
-## Pros/cons of Normalized Model
+### Pros/cons of Normalized Model
 
 - Pros
   - reduce data redundancy
@@ -50,7 +180,7 @@
   - slow performance due to multiple joins
   - not for analytical purposes
 
-## Denormalization
+### Denormalization
 
 - optimization tech to speed up data retrieval
 - requires adding redundancy to various tables
@@ -60,7 +190,7 @@
   - store derived columns (may need to have frequent update)
   - pre-joining tables
   
-## Pros/cons of Denormalized Model
+### Pros/cons of Denormalized Model
 
 - pros
   - improve performance
@@ -72,7 +202,7 @@
   - less flexible
   - insert/updates can be complicated & expensive
 
-## Normalization vs Denormalization
+### Normalization vs Denormalization
 
 | Normalization | Denormalization |
 |:---|:---|
@@ -82,134 +212,6 @@
 | require more joins | less joins |
 | complex data model | simpler data model |
 | **faster data write** | **faster data read** |
-
-## Characteristic of DW
-
-- subject-oriented
-  - focus on a subject
-  - not on operational day to day
-- integrated
-  - data from different sources
-  - data is uniformly transformed
-  - well-defined schema
-- time-variant
-  - data is organized in time periods
-  - contains element of time eitther implicitly or explicitly
-- non-volatile
-  - only loading and accessing data is allowed
-  - daat is refreshed att scheduled time
-
-## DW Architecture
-
-- single-tier
-  
-  ![](../img/dw-single-tier.png)
-
-  - all of source data is stored directly inside data warehouse layer
-  - pro: save data storage and reduce redundancies
-  - con: query data directly from dw that make BI tools slow down returning results
-- two-tier
-  
-  ![](../img/dw-two-tier.png)
-
-  - separate between sources and dw
-  - add data lake and staging layer before dw layer
-    - prevent dw being the main area of stored raw data
-    - data lake: single storage area for all source data
-    - staging layer: can do any transformation/cleaning before storing data in dw
-
-- three-tier
-  
-  ![](../img/dw-three-tier.png)
-
-  - add data mart layer
-    - enable BI insight through data mart layer
-    - model data to serve specific business purpose
-  - three-tier
-    - bottom tier: data source, data lake, staging
-    - middle tier: data warehouse layer, data mart layer
-    - top tier: BI tools/dashboards
-
-## Data Lake
-
-- single store of raw data, cost-effective storage
-- data can be structured, unstructed, images, log, etc.
-- data is in raw format
-- give us better data governance
-
-## 5V in Big Data
-
-- volume: large amount of data
-- velocity: speed of data processing
-- variety: different types of data
-- veracity: the level of trust in the data
-- value: the value within the data
-
-## DL vs DW
-
-|  | DL | DW |
-|:---|:---|:---|
-| Data Structure | Structured, unstructured, raw from all the available sources | Structured, processed data after applying transformation/clean up |
-| Users | DE, DS | BI developer, Analyst |
-| Schema-position | Schema-on-read | Schema-on-write |
-| Purpose | Location to store all raw data | Defined purpose for BI, reporting |
-| Storage | Low cost storage for large amount of data | Can be expensive to store large amounts of data |
-
-## Staging Layer
-
-- between data lake and dw
-- mutliple data source aggregated at staging layer
-- perform data cleaning, transformation, validations
-- storing data in this layer makes processing easier
-
-## DW Layer
-
-- transformed data from staging layer
-- data modelling (dimensional model, OBT, Data Vault)
-- data masking, PII data
-- optimization strategies
-- metadata info is also stored for data lineage
-
-## Data Mart
-
-- subset of DW
-- data is organized in small managable chunks
-- source data for BI
-
-## ETL
-
-- Extract
-  - extract data from the source
-  - data goes into a temporary or persistent storage area
-  - batch or streaming data
-  - data validation checks (format, null values, new columns etc.)
-- Transform: improve quality
-  - cleansing: solve and clean any inconsistency
-  - standardization: apply formatting rules
-  - deduplication: remove duplicates and redundancies
-  - verfication: flag anomalies and remove unusable data
-  - sorting: organize by type
-  - other tasks: other rules applied to improve data quality
-- Load
-  - load the transformed data into dw
-  - conduct data quality check during load
-  - recovery mechanism to handle load failure
-  - types
-    - full refresh load: load all data as fresh
-    - incremental load: scheduled at intervals
-
-## ETL vs ELT
-
-|  | ETL | ELT |
-|:---|:---|:---|
-| volume | small/medium data volume | large data volume |
-| load time | slow as transformation before loading to DW | fast loading as transformation happens later |
-| data type | structured data | structured & unstructured data |
-| complexity | compute-intensive & complex | less complex due to transformation within SQL |
-| cost | high | low |
-| availability | only required for reporting/analysis | everything can be accessed from DL |
-| maintenance | high-maintenance due to on-premise solutions | low-maintenance due to cloud solution |
-| data governance & security | removes PII before load | option to remove PII before load but require more work; PII is removed after load |
 
 ## Data Model and Data Modeling
 
@@ -249,7 +251,7 @@
   | foreign keys |  | optional | Y |
   | target audience | business | architect | developer |
 
-## Keys
+### Keys
 
 - uniquely identity a record in a table
 - types
@@ -280,7 +282,7 @@
     - table that contains FK is called child table
     - FK enforces a referential integrity
 
-## ERD Notation
+### ERD Notation
 
 - create a visual representation of entities and attributes
 - provides preview of how tables should connect
@@ -333,6 +335,94 @@
   2. relationship
   3. cardinality
   4. attributes
+
+## DW Design Methodology
+
+- Inmon
+  - Corporate Information Factory (CIF
+  - EDW (Enterprise DW) is the core, central repo for all business data
+    - data is often structured in 3NF
+  - data marts are created separately for each business function (DMs are built after DW built is fully completed)
+  - top-down / data-drive approach
+  - pros:
+    - all data is integrated
+    - low data redundancy
+  - cons:
+    - time-intensive
+    - requires knowledge and understanding of the entire business
+    - isolated data marts
+    - not very agile
+
+- Kimball
+  - starts with key business processes/requirements (bottom-up)
+  - focus is to enable BI fast
+  - DM built before DW
+  - dimensional model (denormalized, fact/dim tables)
+  - pros:
+    - quick to set up
+    - agile approach to data modelling
+    - easy to work with (denormalization)
+    - faster query and analysis
+    - allows self-service reporting
+  - cons:
+    - anomalies could arise due to the denormalization thus addtition of redundant data
+    - not suitable for changing business requirements
+
+- Data Vault
+  - agile approach to build dw
+  - hybrid approach (3NF + dimensional model/star schema)
+  - every entity table (hub) is connected through a link table in a form of normalized tables
+  - components:
+    - hub
+      - business entity
+      - contains unique business keys (hash)
+    - link
+      - create relationship between different entities
+      - many-to-many relationship (3NF)
+      - link makes easier to add new sources
+    - satellite (attribute)
+      - contains attributes of original tables
+      - similar to dim tables
+      - subject to change over time
+      - store changes at granular level (similar to SCD type 2)
+
+    ![data-vault-architecture](../img/data-vault.png)
+
+    - pros:
+      - allow historical data tracking
+      - incremental builds that handle multiple soources
+      - easy to handle changing business requirements
+    - cons:
+      - complex setup
+      - not fit for small data sources
+      - high learning curve
+      - might lead to a loss of a single source of truth
+
+- Inmon vs Kimball vs Data Vault
+
+||Kimball|Inmon| Data vault
+|:---|:--|:--|:---|
+|Approach|bottom-up|top-down|hybrid/agile|
+|Focus|individual business use-cases| enterprise data integration| enterprise integration|
+|Data format|denormalized|normalized| in raw format (raw vault)|
+|Delivery time|quick set up driving business value|takes lots of effort at the start and requires very deep expertises| quick to set up but very complex to model |
+|Maintenence|low-medium|medium-high| high|
+
+- Wide table/one big table (OBT)
+  - one big denormalized table
+  - remove all jois and pre-aggregated
+  - faster query performance
+  - ideal for getting started and for smaller project
+  - for complex projects use OBT as part of star schema
+  - pros:
+    - quick data retrieval
+    - fit for smaller teams
+    - work pretty well for reporting purposes
+  - cons:
+    - not good for big DW
+    - hard to maintain as denormalized tables can have duplicates
+    - difficult to handle SCD
+    - expensive update operations
 
 ## Reference
 
