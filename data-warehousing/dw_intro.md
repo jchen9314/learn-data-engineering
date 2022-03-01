@@ -424,6 +424,132 @@
     - difficult to handle SCD
     - expensive update operations
 
+## Dimensional Modelling
+
+- fit for dw and BI applications
+- denormalized structure, optimized for faster data retrieval
+
+### Kimball dw lifecycle
+
+![](https://www.kimballgroup.com/wp-content/uploads/2012/06/kimball-core-concepts-021.png)
+
+### steps
+
+- select the business process
+  - capture performance metrics that will get translated into fact tables
+- declare the grain (daily, hourly,...)
+  - define level of detail for star schema
+  - data should be stored as granular as possible
+- identify the dimensions
+  - who, what, where, when, why, how context of a business process
+- identify the facts
+  - measurements in numeric values that result from a business process
+
+### dimensions
+
+- contains descriptive fields for facts
+- flat denormalized table
+- type:
+  - conformed dim:
+    - common dims that are joined to multiple facts
+    - every row is unique and is at atomic level
+    - contains primary & surrogate keys
+    - date dim is a conformed dimension
+  - junk dim
+    - dim with simple attributes (flag, yes/no, t/f, etc.), values don't change frequently
+  - degenerate dim
+    - dims without attributes that exist inside the fact table (eg, tracking number, order number etc.)
+    - have high cardinality
+    - stored in fact table to reduce duplicates
+  - role-playing dim
+    - same dimension used for multiple purpose
+    - use date dimension instead (eg. order_date, due_date, cancelled_date)
+  - SCD
+    - dim that change over time
+    - manages current and historical version (track changes)
+    - type
+      - type 0: retain original (no changes at all)
+      - type 1: overwrite the old value (reflect the most recent assignment)
+      - type 2: new additional row/record
+        - add surrogate key(PK), current_flag column, date columns(valid_from, valid_to)
+          - valid_to = NULL -> current record
+      - type 3: add a new attribute column
+      - type 4: use historical table to track changes separate to the dim table
+
+### bridge table
+
+- uses to resolve many-to-mnay relationshiop
+- sits between fact and dim
+- only contains key columns for various tables
+
+### facts
+
+- contains measurement created by operational systems
+- at the lowest granularity captuerd by the buiness process
+- PK is usually a composite key
+- foreign key + measure
+- type of facts (measure)
+  - additive
+    - measures that can be summed across any of the dimension within the fact table
+  - semi-additive
+    - measures that can be summed across some of the dimension within the fact table
+  - non-additive
+    - measures that cannot be summed across any of the dimension within the fact table
+- type of fact tables
+  - transaction: store one row per transaction
+    - most common
+    - lowest level of granualarity & date dim
+    - additive measure
+    - can grow large very quick
+  - periodic
+    - snapshot of data for specific time, aggregated table with some granularity
+    - semi-additive
+    - built from transaction fact table
+    - smaller table size compared to transaction fact table
+  - accumulating fact table
+    - one row per entire lifetime of an event or product
+    - has start, end date
+    - update happens when each milestone is completed
+    - smallest in table size
+    - eg. processing of insurance, order...
+
+### star schema
+
+- simple structure to organize data within data warehouse
+- fact table at the center of the star connects to the dim tables
+- enable easier querying and understanding
+- pros:
+  - simpler queries compared to a normalized model
+  - simplify business reporting
+  - better query performance
+- cons:
+  - data integrity not enforced (denormalized form)
+  - doesn't inform many-to-many relationships
+  - dependent on business process
+
+### snowflake schema
+
+- normalize the data from star schema
+- pros:
+  - improve data quality
+  - less storage
+  - fit for data with deep hierarchies
+  - easier to design/develop
+- cons:
+  - requires complex queries
+  - increase number of joins
+  - difficult for business user to understand data
+
+### star vs snowflake
+
+||Star schema| Snowflake schema|
+|:---|:---|:---|
+|data structure|denormalized|normalized on top of denormalized|
+|storage required| more| less|
+|performance|faster|slower|
+|data redundancy|Y|N|
+|organizational|better for data marts|better for warehouse|
+
 ## Reference
 
 1. [Analytics-engineering-bootcamp](https://www.udemy.com/course/analytics-engineering-bootcamp/)
