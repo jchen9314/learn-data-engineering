@@ -62,6 +62,9 @@
 ### Consumer
 
 - consumers read data in consumer groups
+  - kafka treats consumers inside a consumer group as one entity
+    - avoid reading duplicated message for different consumer
+    - be able to horizontally scale the consumer application (different consumer read different messages at the same time)
 - topic logs can be partitioned, which is used for scalability
   - increase partitions allows consumer grooup to increase the number of consumers to read data faster
 - partitions are assigned to consumers inside the consumer group
