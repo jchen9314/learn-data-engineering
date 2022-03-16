@@ -26,6 +26,22 @@
 - container: runtime instance of docker image
 - docker hub: the registry where the docker images live; users can pick up images from docker hub and build customized images/containers on top of them
 
+### Docker Architecture
+
+![](../img/dokcer-architecture.png)
+
+- Docker client: send commands to Daemon
+- Docker Daemon (server): manage images/containers
+- when running a container:
+  - Daemon first check if it exists in local images
+  - if not, check the image registry and download it
+
+### Why docker
+
+- standardized application packaging: same packaging for all types of applications
+- multi-platform support: local machine, data center, cloud
+- light-weight and isolation: light-weight compared to VMs, isolated from one another
+
 ### Dockerfile
 
 - a text file that contains all the instructions/commands a user need to assemble an image
@@ -33,7 +49,7 @@
 
 ### docker compose
 
-- used to set up multiple-contain applications
+- used to set up multiple-container applications
 - a yaml file which contains details about the services, networks, volumns for setting up applcaitioons
 
 ## Docker commands

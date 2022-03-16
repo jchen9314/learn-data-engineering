@@ -23,7 +23,7 @@
   ```shell
   docker search mysql
 
-  # see the layers inside an image
+  # see the layers inside an image (an image is built on several layers)
   docker image history REPO_NAME:TAG_NAME
   docker image history IMAGE_ID
 
@@ -33,7 +33,7 @@
 
 - remove images
 
-  - before removing images, should stop running containers first
+  - __before removing images, should stop running containers first__
     - `docker container rm CONTAINER_ID`
 
   ```shell
@@ -51,18 +51,18 @@
   - `-d`: detached mode, give the terminal window back to us
 
   ```shell
-  docker run -p 5000:5000 REPO_NAME/IMAGE_NAME:TAG/VERSION
+  docker container run -p 5000:5000 REPO_NAME/IMAGE_NAME:TAG/VERSION
   # -p: publish
   # 5000:5000 localhost port: container port
   # -p 5000:5000 publish a container port onto a local port
   ```
 
 - operations on container
-  - `CONTAINER_ID`: first 4 chars of the actual container id
+  - `CONTAINER_ID`: first 3-4 chars of the actual container id
 
   ```shell
   # check logs
-  docker logs CONTAINER_ID
+  docker container logs CONTAINER_ID
   # pause container
   docker container pause CONTAINER_ID
   # stop running container
@@ -84,7 +84,7 @@
   ```
 
   - `docker ps` lists all running containers in docker engine
-  - `docker-compose ps` lists containers related to **images declared in docker-compose file**
+  - `docker-compose ps` lists containers related to __images declared in docker-compose file__
 
 - remove container
 
@@ -103,7 +103,27 @@
   # -d: detached mode, means the terminal is back to us
   ```
 
+## Docker system
+
+```shell
+# show docker disk usage
+docker system df
+# get real-time events from the server
+docker system events
+# remove all stopped containers and all images w/o at least one container associated with them
+docker system prune -a
+```
+
+```shell
+# check stats of container
+docker container stats CONTAINER_ID
+# set container configuration
+# memory: 512MB, cpu: 50000, total is 100000
+docker container run -m 512m --cpu-quota=50000
+```
+
 ## Reference
 
 1. https://www.digitalocean.com/community/tutorials/how-to-remove-docker-images-containers-and-volumes
 2. https://www.edureka.co/blog/interview-questions/docker-interview-questions/
+3. https://www.udemy.com/course/devops-with-docker-kubernetes-and-azure-devops/learn/lecture/18087007?start=0#content
