@@ -45,7 +45,24 @@
 ### Dockerfile
 
 - a text file that contains all the instructions/commands a user need to assemble an image
+
+Assume the following folder structure
+
+```md
+- myproject_root
+  - Dockerfile
+  - app.py
+  - requirements.txt
+```
+
+- sample Dockerfile is [here](Dockerfile)
 - use `docker build` to build an image
+
+```shell
+# -t: image tag
+# .: build image using context in current directory
+docker build -t IMAGE_NAME:TAG_NAME .
+```
 
 ### docker compose
 
