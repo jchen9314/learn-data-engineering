@@ -7,18 +7,18 @@
 - AWS Redshift
 - Azure Synapse Analytics
 
-## Azure Synapse
+## Azure Synapse Dedicated SQL Pool
 
 ### MPP: Massively Parellel Processing
 
-- want to do as much work in parallel as possible
+- want to do as much work in parallel as possible (run in multiple distributions)
 
 ![](https://social.technet.microsoft.com/wiki/resized-image.ashx/__size/400x500/__key/communityserver-wikis-components-files/00-00-00-00-05/0844.AAEAAQAAAAAAAAkwAAAAJDhmMWMyOTU2LTI1NGMtNGFhYy1hZDJhLTFhYTkyMzMwYzhkNQ.png)
 
-- data is stored in blob storage (separate data from computer power)
-- computer node: provide the compute power for analytis, run queries in parallel
+- data is stored in blob storage (separate data from compute power)
+- compute node: provide the compute power for analytis, run queries in parallel
 - control node: brain of dw, the front end that interacts with applications and connections
-  - mpp engine runs on control node: optimize and coordinate parallel queries
+  - host mpp engine: optimize and coordinate parallel queries
 - DMS (data movement service): internal service that moves data across multiple nodes
   - when sql dw runs a query, the work is divided into 60 smaller queries that run in parallel
 
@@ -29,17 +29,26 @@
 - each compute node manages 1 or more of the 60 distribution
 - 3 distribution pattern
   - hash (highest performance, large fact table, size > 2 GB, used with clustered columnstore index)
-    - hash key: -> make data distributed evenly
+    - hash key: -> make data distributed evenly (no data skewness)
+      - same value -> same distribution
       - have many unique values
       - not date, not in WHERE
       - used in __JOIN, GROUP BY, DISTINCT, OVER, and HAVING__
+        - if none of columns selected, can create a col that combines multiple cols
 
     ```sql
+    -- partition (id range left for values (10, 20, 30, 40)): <= 10, >10 and <= 20, ...
     WITH (
         CLUSTERED COLUMNSTORE INDEX
         DISTRIBUTION = HASH([column_name])
         PARTITION (partition_column_name RANGE [LEFT | RIGHT] FOR VALUES ([boundary_value [,...n]]))
     )
+
+    ```
+
+    ```sql
+    -- check data skewness
+    DBCC PDW_SHOWSPACEUSED('table_name')
     ```
 
   - round-robin (fast loading, staging tables, used with heap index, no key)
@@ -91,7 +100,7 @@
 
 ### Partitioning
 
-- enable us to divide the data into smaller groups off data
+- enable us to divide the data into smaller groups of data
 - improve the efficiency and performance of loading data by use of partition deletion, switching, and merging
 - usually date column/WHERE clause, depends on the query requirement
 - lower granularity (week, month) can perform better depending on how much data you have
