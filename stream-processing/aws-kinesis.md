@@ -63,11 +63,23 @@
         - returns up to 10 MB of data (then wait for 5 s) or up to 10k records
         - max of 5 GetRecords API calls per shard per second = 200ms latency
         - **if 5 consumer app consume from the same shard, means every consumer can poll once a second and receive less than 400KB/s**
-    - kinesis connector library
+    - kinesis connector library (legacy)
       - older java library (2016), leverages kcl
       - write data to s3, dynamoDB, redshift, elasticsearch
       - kinesis firehose replace it for a few (s3, redshift), lambda for other targets
   - managed: lambda, kinesis firehose, kinesis data analtyics
+- Enhanced fan out
+  - Consumers subscribeToShard() and kinesis pushes data to consumers over HTTP/2 (reduce latency: ~70ms)
+    - each consumer get 2MB/s of provisioned throughput per shard
+      - 20 consumers -> 40 MB/s per shard aggregated, no more 2MB/s
+- Enhanced fan out vs standard consumers
+
+  | Standard consumers | Enhanced fan out consumers |
+  |:---|:---|
+  | Low # of consuming apps (1,2,3, ...) | Multi consumer apps for the same stream |
+  | can tolerate ~200 ms latency | low latency ~70 ms |
+  | min cost | higher cost; default limit 20 consumers using EFO per data stream |
+
 - capacity modes:
   - provisioned (pay per shard provisioned per hour)
     - choose # shards, manual scale or API
@@ -77,9 +89,47 @@
   - on-demand (pay per stream per hr, data in/our per GB)
     - default capacity provisioned (4MB/s or 4000 records/s)
     - auto-scaling based on observed throughput peak (last 30 days)
-- security
+
+- kinesis operation
+  - adding shards (shard splitting)
+    - can be used to increase capacity
+    - use to divide "hot shard"
+
+  ![](https://miro.medium.com/max/1400/1*nds9c4TFs1eHSXHxxves7g.webp)
+
+  - merging shards
+    - decrease stream capacity, save costs
+    - use to group 2 shards with low traffic
+
+  - out-of-order records after resharding
+
+    - eg. IoT send data 1, 2 to kinesis stream (parent shard) -> split shards -> IoT send data 3, 4 to new/child shard then consumer apps -> out-of-order since 3, 4 may be sent before 1, 2
+    - solution: read entirely from parent until you don't have new records, then read from child shards (KCL has this logic built-in)
+
+    ![](../img/out-of-order-resharding-kinesis.png)
+
+- Handle duplicates
+  - producer: embed unique id in the data to deduplicate from consumer side
+    - eg. network timeout such that no ACK from data streams, producer retries/reloads the data
+    ![](../img/aws-kinesis-producer-duplicates.png)
+  - consumer:
+    - retries can make app read the same data twice
+    - retries happen when record processors restart:
+      1. work terminate unexpectedly
+      2. work added/removed
+      3. reshard
+      4. deploy the app
+    - fix:
+      - make consumer app idempotent
+      - if final destination can handle duplicates, it is recommended to do it there
+
+  - security
   - IAM to control access
   - encryption in flight: HTTPS endpoints
   - encryption at rest: KMS
   - vpc endpoints available
   - monitor api calls using CloudTrail
+
+## Reference
+
+1. https://www.udemy.com/course/aws-data-analytics/
