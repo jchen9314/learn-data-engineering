@@ -32,8 +32,7 @@ the analytics layer to business users.
     domain owners can then leverage the data for their analytics or
     operational needs.
 
-![Diagram Description automatically
-generated](media/image1.png){width="5.828110236220472in"
+![ ](../img/dqf_data_mesh.jpg){width="5.828110236220472in"
 height="4.122018810148732in"}
 
 3\. Data warehouses require "schema on write" access, meaning we set the
@@ -208,8 +207,7 @@ blur the lines between the two technologies:
 
 -   Building data platform
 
-![Graphical user interface Description automatically generated with
-medium confidence](media/image2.png){width="4.47465769903762in"
+![](../img/dqf_data_platform_six_layers.jpg){width="4.47465769903762in"
 height="3.313445975503062in"}
 
 -   Developing trust in data:
