@@ -1,12 +1,12 @@
-1\. "data in production" refers to data from source systems (like CRMs,
+# 1\. Data in production:
+"data in production" refers to data from source systems (like CRMs,
 CMSs, and databases from any of the other analogies previously
 mentioned) that has been ingested by your warehouse, data lake, or other
 data storage and processing solutions and flows through your data
 pipeline (extract-transform-load, or ETL) so that it can be surfaced by
 the analytics layer to business users.
 
-2\. Data Mesh:
-
+# 2\. Data Mesh:
 -   Unlike traditional monolithic data infrastructures that handle the
     consumption, storage, transformation, and output of data in one
     central data lake, a data mesh supports distributed, domain-specific
@@ -34,7 +34,8 @@ the analytics layer to business users.
 
 ![ ](../img/dqf_data_mesh.jpg)
 
-3\. Data warehouses require "schema on write" access, meaning we set the
+# 3\. Data warehouses and data lake:
+Data warehouses require "schema on write" access, meaning we set the
 structure of the data at the instant it enters the warehouse. Unlike
 data warehouses, data lake architectures permit "schema on read" access.
 This means we infer the structure of the data when we're ready to use
@@ -64,7 +65,7 @@ blur the lines between the two technologies:
     while Amazon Athena offers a fully managed lake SQL query engine and
     Amazon's Glue offers a fully managed metadata service.
 
-5\. Data Quality Metrics:
+# 5\. Data Quality Metrics:
 
 -   Build a list of questions to start with, like "Is the data
     up-to-date?", "Is the data complete?", "Are fields within expected
@@ -90,7 +91,7 @@ blur the lines between the two technologies:
     sprawl downstream, as well as who in the organization has the
     permission to access it across the pipeline.
 
-> 6\. Collecting Data, like:
+# 6\. Collecting Data, like:
 
 -   Application Log Data
 
@@ -98,7 +99,7 @@ blur the lines between the two technologies:
 
 -   Sensor data
 
-7\. Cleaning Data, like:
+# 7\. Cleaning Data, like:
 
 -   Outlier removal: statistical techniques like standard scoring, or
     more snazzy algorithmic techniques like isolation forests, to remove
@@ -117,7 +118,7 @@ blur the lines between the two technologies:
 
 -   Type coercions
 
-8\. Ensure Data Quality during ETL:
+# 8\. Ensure Data Quality during ETL:
 
 -   In the extract step, raw data is exported from some number of
     upstream sources and moved into a staging area.
@@ -127,7 +128,7 @@ blur the lines between the two technologies:
     sensitive data fields or to meet industry or government regulations,
     and conduct data governance audits or data quality checks.
 
-9\. Data Observability:
+# 9\. Data Observability:
 
 -   Monitor for freshness: setup a strong indicator of when critical
     data were last updated (for example, check how many rows/data have
@@ -144,7 +145,7 @@ blur the lines between the two technologies:
 
 -   Visualizing lineage
 
-10\. Data reliability architecture:
+# 10\. Data reliability architecture:
 
 -   Measuring and maintaining high data reliability at ingestion:
     including data cleaning, data wrangling (enrich and structure) and
@@ -239,7 +240,7 @@ blur the lines between the two technologies:
         -   Tracking data reliability with SLOs: track TTD, build
             dashboards, and etc.
 
-11\. Root Cause Analysis:
+# 11\. Root Cause Analysis:
 
 -   Look at your lineage: DAG
 
@@ -247,7 +248,7 @@ blur the lines between the two technologies:
 
 -   Leverage with your peers.
 
-12\. Building End-to-End Lineage
+# 12\. Building End-to-End Lineage
 
 -   Basic Lineage Requirements:
 
@@ -275,7 +276,7 @@ blur the lines between the two technologies:
 
 -   Building the User Interface.
 
-13\. Prioritizing Data Governance and Compliance:
+# 13\. Prioritizing Data Governance and Compliance:
 
 -   Prioritizing a Data Catalog: build their own data catalogs to ensure
     data compliance, but may time and resource consuming; ML-powered
