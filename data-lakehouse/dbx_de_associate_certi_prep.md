@@ -123,7 +123,8 @@
   - external table
     - created outside the database dir
     - `CREATE TABLE table LOCATION "path"`
-    - drop the table, will **NOT** delete the underlying data files
+    - drop the table, **only the table definition is dropped** from metastore everything including data and metadata(Delta transaction log, time travel history) remains in the storage.
+    - When spark queries an external table it caches the files associated with it, so that way if the table is queried again it can use the cached files so it does not have to retrieve them again from cloud object storage, but the drawback here is that if new files are available Spark does not know until the **Refresh** command is ran -> force to refresh the availiability of external files/any changes.
   - supports generated columns which are a special type of columns whose values are automatically generated based on a user-specified function over other columns in the Delta table, also support partitioning using generated column
     - for example, `generated always as (cast(order_time as DATE))`
   - CTAS:
@@ -190,7 +191,7 @@
       - text-based files (json, csv, tsv, txt)
 
       ```sql
-      SELECT * FROM text.`/path/to/filee`
+      SELECT * FROM text.`/path/to/file`
       ```
 
     - extract files as raw bytes
@@ -358,8 +359,12 @@ describe function [extended] get_url
       - record the offset range of data being processed during each trigger interval
     - exactly-once: idempotent sinks, multiple writes of the same data don't lead to duplicates in sink
   - unsupported operations
-    - sorting
-    - deduplication
+    - Multiple streaming aggregations (i.e. a chain of aggregations on a streaming DF) are not yet supported on streaming Datasets.
+    - Limit and take the first N rows are not supported on streaming Datasets.
+    - Distinct operations on streaming Datasets are not supported.
+    - Deduplication operation is not supported after aggregation on a streaming Datasets.
+    - Sorting operations are supported on streaming Datasets only after an aggregation and in Complete Output Mode.
+      - Note: Sorting without aggregation function is not supported.
 
 - incremental data ingestion
   - loading new data files encountered since the last ingestion
@@ -483,7 +488,9 @@ describe function [extended] get_url
     |dbx admin|all objects in catalog and underlying filesystem|
     |Catalog owner|all objects in catalog|
     |Database owner|all objects in database|
-  
+  - Data explorer lets you easily explore and manage permissions on databases and tables.
+    - Users can view schema details, preview sample data, and see table details and properties. 
+    - Administrators can view and change owners, and admins and data object owners can grant and revoke permissions.
   - `ANY FILE` can not be granted in Data Explorer, have to run SQL command in editor
 - Unity catalog
   - centralized governance solution across all workspaces on cloud
