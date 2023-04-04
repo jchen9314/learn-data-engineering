@@ -42,6 +42,7 @@
     - `%md`
     - `%run`: run other notebooks inside the current one
     - `%fs` or `dbutils`
+  - support real-time coauthoring on single notebook
 - Delta lake
   - is:
     - open source tech
@@ -102,7 +103,7 @@
         - files that are no longer in latest table state
       - `VACUUM table_name [retention period]`
         - default retention: 7 days
-        - if we only want to pertain the latest version, need to `SET spark.databricks.delta.retentionDurationCheck.enabled = false` then `VACUUM table RETAIN 0 HOURS`
+        - **if we only want to pertain the latest version, need to `SET spark.databricks.delta.retentionDurationCheck.enabled = false` -> `VACUUM table RETAIN 0 HOURS`**
 - Database
   - schemas in hive metastore
 
@@ -123,6 +124,8 @@
     - created outside the database dir
     - `CREATE TABLE table LOCATION "path"`
     - drop the table, will **NOT** delete the underlying data files
+  - supports generated columns which are a special type of columns whose values are automatically generated based on a user-specified function over other columns in the Delta table, also support partitioning using generated column
+    - for example, `generated always as (cast(order_time as DATE))`
   - CTAS:
 
     ```sql
@@ -240,9 +243,9 @@
   ```
 
 - writing to tables
-  - CREATE OR REPLACE TABLE AS SELECT
+  - CREATE OR REPLACE TABLE AS SELECT: can modify the schema of the table
   - INSERT OVEWRITE SELECT
-    - cannot overwrite/modify the schema
+    - cannot overwrite/modify the schema, can update the schema if "spark.databricks.delta.schema.autoMerge.enable" = "true"
     - safer technique for overwriting an existing table w/o the risk of modifying the table schema
   - INSERT INTO: add records to the table (no guarantee on duplicates)
   - MERGE INTO: avoid duplicates, upsert
@@ -264,7 +267,7 @@ select profile:first_name, profile:address:country
 from customers
 
 -- convert json data to struct type
-from_json(profilee, schema_of_json("{json_schema_extract_from_data}"))
+from_json(profile, schema_of_json("{json_schema_extract_from_data}"))
 
 -- `profile_struct` col is a nested struct type, use . to extract contents
 select profile_struct.first_name, profile_struct.address.country from customers
@@ -277,7 +280,7 @@ select profile_struct.* from customers
 -- explode: each element of array to row
 select explode(books) from orders
 
--- collect_set: aggregation function, merge rows into array without duplicates
+-- collect_set: aggregation function, **merge rows into array (transform Col to array)** without duplicates
 -- collect_list: similar to collect_set with duplicates
 -- to flatten: use flatten(collect_set(col))
 select
@@ -353,7 +356,7 @@ describe function [extended] get_url
   - guarantees
     - fault tolerance: checkpointing + write-ahead logs
       - record the offset range of data being processed during each trigger interval
-    - exactly-once: idempotent sinks
+    - exactly-once: idempotent sinks, multiple writes of the same data don't lead to duplicates in sink
   - unsupported operations
     - sorting
     - deduplication
@@ -386,6 +389,7 @@ describe function [extended] get_url
       - pyspark API
 
       ```py
+      # schemaLocation: store schema inferred by autoloader 
       spark.readStream
              .format('CloudFiles')
              .option('cloudFiles.format', <source_format>)
@@ -401,9 +405,11 @@ describe function [extended] get_url
       - COPY INTO:
         - thousands of files
         - less efficient at scale
+        - only support directory listing
       - Auto Loader:
         - millions of files
         - efficient at scale
+        - support dir listing and file notification
 
 - Multi-hop pipeline
   - medallion arch
@@ -415,12 +421,13 @@ describe function [extended] get_url
     - combine streaming and batch workloads in unified pipeline
     - can recreate tables from raw data at any time
 
-## Prooduction Pipelines
+## Production Pipelines
 
 - delta live table
   - `LIVE TABLE`, `LIVE VIEW`, `STREAMING LIVE TABLE`
   - `select * from LIVE.table`: read data from a live table
   - `CONSTRAINT valid_order_number EXPECT (order_id IS NOT NULL) ON VIOLATION DROP ROW`
+  - `CONSTRAINT valid_count EXPECT (count > 0) ON VIOLATION FAIL UPDATE`
 - CDC: change data capture
   - process of identifying changes made to data in the source and delivering those changes to the target
   - row-level changes: insert, update, delete
@@ -464,7 +471,7 @@ describe function [extended] get_url
   - object: CATALOG, SCHEMA, TABLE, VIEW, FUNCTION, ANY FILE
   - privilege:
     - SELECT
-    - MODIFY: add, delete, and modify data to or from an object
+    - MODIFY: add, delete, and update data to or from an object
     - CREATE
     - READ_METADATA
     - USAGE: No effect! required to perform any action on a database object)
@@ -524,6 +531,15 @@ describe function [extended] get_url
     - built-in data search and discovery
     - automated lineage
     - no hard migration required
+
+## SQL Warehouse
+
+-  if the queries are running sequentially then scale up(Size of the cluster from 2X-Small to 4X-Large) 
+-  if the queries are running concurrently or with more users then scale out(add more clusters).
+-  A single cluster irrespective of cluster size(2X-Smal.. to ...4XLarge) can only run 10 queries at any given time if a user submits 20 queries all at once to a warehouse with 3X-Large cluster size and cluster scaling (min 1, max1) while 10 queries will start running the remaining 10 queries wait in a queue for these 10 to finish.
+-  A warehouse can have more than one cluster this is called Scale out. If a warehouse is configured with X-Small cluster size with cluster scaling(Min1, Max 2) Databricks spins up an additional cluster if it detects queries are waiting in the queue, If a warehouse is configured to run 2 clusters(Min1, Max 2), and let's say a user submits 20 queries, 10 queriers will start running and holds the remaining in the queue and databricks will automatically start the second cluster and starts redirecting the 10 queries waiting in the queue to the second cluster.
+
+
 
 ## Reference
 
