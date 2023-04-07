@@ -43,6 +43,7 @@
     - `%run`: run other notebooks inside the current one
     - `%fs` or `dbutils`
   - support real-time coauthoring on single notebook
+  - Only Job results are stored in Data Plane(your storage), Interactive notebook results are stored in a combination of the control plane (partial results for presentation in the UI) and customer storage.
 - Delta lake
   - is:
     - open source tech
@@ -374,6 +375,8 @@ describe function [extended] get_url
     - COPY INTO
       - idempotently and incrementally load new data files
         - files that has already been loaded are skipped
+      - COPY INTO did not detect new files after the last load
+        - COPY INTO keeps track of files that were successfully loaded into the table, the next time when the COPY INTO runs it skips them. You can change this behavior by using COPY_OPTIONS 'force'= 'true', when this option is enabled all files in the path/pattern are loaded.
 
       ```sql
       COPY INTO table
@@ -395,6 +398,7 @@ describe function [extended] get_url
       - pyspark API
       - When cloudfiles.schemalocation is used to store the output of the schema inference during the load process, with schema hints you can enforce data types for known columns ahead of time. 
       - Autoloader automatically re-processes data that was not loaded using the checkpoint.
+      - Can set a high maxFilesPerTrigger to improve the ingestion performance: The default value of maxFilesPerTrigger is 1000 it can be increased to a much higher number but will require a much larger compute to process.
 
       ```py
       # schemaLocation: store schema inferred by autoloader 
@@ -466,7 +470,9 @@ describe function [extended] get_url
 ## Data Governance
 
 - data governance model: programmatically grant, deny, and revoke access to data objects
-- GRANT
+- GRANT:
+  - only owner can grant access to an object
+  - A user who creates the object becomes its owner, does not matter who is the owner of the parent object.
 
   ```sql
   GRANT privilege ON object <object_name> TO <user_or_group>
@@ -546,6 +552,19 @@ describe function [extended] get_url
   - Upgrade existing workspace managed table to unity catalog table:
  
     `Create table catalog_name.schema_name.table_name as select * from hive_metastore.old_schema.old_table`
+
+  - fine-grained access control to rows and columns of delta table based on users' access: use dynamic view functions
+
+    ```sql
+    # hide a column data based on user's access
+    CREATE VIEW sales_redacted AS 
+    SELECT user_id,
+           CASE WHEN is_member('auditors') THEN email ELSE 'REDACTED' END AS email,
+           country, 
+           product, 
+           total 
+    FROM sales_raw
+    ```
 
 ## SQL Warehouse
 
