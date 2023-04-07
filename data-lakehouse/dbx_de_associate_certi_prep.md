@@ -347,8 +347,9 @@ describe function [extended] get_url
 
   | Mode | Method call | Behavior |
   |:---|:---|:---|
-  | Append (Default) | .outputMode('append') | Only newly appended rows are incrementally appended to the target table with each batch |
-  | Complete | .outputMode('complete') | The target tablee is **overwritten** with each batch |
+  | Append (Default) | .outputMode('append') | Only newly appended rows are incrementally appended to the target table with each batch; This is supported for only those queries where rows added to the Result Table is never going to change |
+  | Complete | .outputMode('complete') | The target table is **overwritten** with each batch |
+  |Update|Only the rows in the Result Table that were updated since the last trigger will be outputted to the sink. |
 
   - checkpoint
     - store stream state
@@ -392,6 +393,8 @@ describe function [extended] get_url
       - can process billions of files
       - support near real-time ingestion of millions of files per hour
       - pyspark API
+      - When cloudfiles.schemalocation is used to store the output of the schema inference during the load process, with schema hints you can enforce data types for known columns ahead of time. 
+      - Autoloader automatically re-processes data that was not loaded using the checkpoint.
 
       ```py
       # schemaLocation: store schema inferred by autoloader 
@@ -399,6 +402,7 @@ describe function [extended] get_url
              .format('CloudFiles')
              .option('cloudFiles.format', <source_format>)
              .option('cloudFiles.schemaLocation', <schema_dir>)
+             .option("cloudFiles.schemaHints", "id int, description string")
              .load('/path/to/file')
            .writeStream
              .option('checkpointLocation', <checkpooint_dir>)
@@ -433,6 +437,7 @@ describe function [extended] get_url
   - `select * from LIVE.table`: read data from a live table
   - `CONSTRAINT valid_order_number EXPECT (order_id IS NOT NULL) ON VIOLATION DROP ROW`
   - `CONSTRAINT valid_count EXPECT (count > 0) ON VIOLATION FAIL UPDATE`
+  - two modes: continuous, triggered
 - CDC: change data capture
   - process of identifying changes made to data in the source and delivering those changes to the target
   - row-level changes: insert, update, delete
@@ -538,6 +543,9 @@ describe function [extended] get_url
     - built-in data search and discovery
     - automated lineage
     - no hard migration required
+  - Upgrade existing workspace managed table to unity catalog table:
+ 
+    `Create table catalog_name.schema_name.table_name as select * from hive_metastore.old_schema.old_table`
 
 ## SQL Warehouse
 
