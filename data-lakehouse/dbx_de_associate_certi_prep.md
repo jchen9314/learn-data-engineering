@@ -117,6 +117,8 @@
 
     ![hive-metastore-db](../img/hive_metastore_db_loc.png)
 
+  - create the database here **without specifying a LOCATION clause**, the database will be created in the default warehouse directory under **dbfs:/user/hive/warehouse**. The database folder have the extension (.db)
+
 - Table
   - managed table
     - created under the database dir
