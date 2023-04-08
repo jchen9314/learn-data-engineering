@@ -140,7 +140,7 @@
     AS SELECT id, name, email, dob AS birth_date, city FROM user
     ```
 
-    - auto infer schema fromm query results
+    - auto adopt schema details from the source table and query.
     - don't support manual schema declaration
     - table created with data
     - filter and rename cols
