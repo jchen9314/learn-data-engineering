@@ -170,7 +170,7 @@
   - logical query against source tables (CREATE VIEW AS)
   - types of views
     - stored view:
-      - persist objects (CREATE VIEW AS query)
+      - persist objects/queries, not data itself (CREATE VIEW AS query)
       - dropped only by DROP VIEW
     - temporary view:
       - session-scoped view (CREATE TEMP VIEW AS query)
@@ -352,7 +352,7 @@ describe function [extended] get_url
   |:---|:---|:---|
   | Append (Default) | .outputMode('append') | Only newly appended rows are incrementally appended to the target table with each batch; This is supported for only those queries where rows added to the Result Table is never going to change |
   | Complete | .outputMode('complete') | The target table is **overwritten** with each batch |
-  |Update|Only the rows in the Result Table that were updated since the last trigger will be outputted to the sink. |
+  |Update| .outputMode('update') |Only the rows in the Result Table that were updated since the last trigger will be outputted to the sink. |
 
   - checkpoint
     - store stream state
