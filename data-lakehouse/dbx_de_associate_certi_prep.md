@@ -581,3 +581,5 @@ describe function [extended] get_url
 ## Reference
 
 1. https://www.udemy.com/course/databricks-certified-data-engineer-associate/
+2. https://www.udemy.com/course/databricks-certified-data-engineer-associate-practice-tests/
+3. https://www.udemy.com/course/practice-exams-databricks-certified-data-engineer-associate/
