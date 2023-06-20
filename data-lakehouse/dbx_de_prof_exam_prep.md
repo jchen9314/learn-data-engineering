@@ -47,7 +47,27 @@
   - total number of records
   - min, max value in each column of the first 32 columns of the table
   - null value counts in each column of the first 32 columns of the table
- 
+
+### Auto Optimize (2 complementary operations)
+
+- delta.autoOptimize.optimizeWrite
+  - most effective for partitioned tables, as they reduce the number of small files written to each partition.
+  - attempts to write 128 MB files
+
+  ![](https://docs.databricks.com/_images/optimized-writes.png)
+
+- delta.autoOptimize.autoCompact
+  - after the write completes, it checks if files can be further compacted
+  - if yes, it runs OPTIMIZE job toward a file size of 128 MB
+
+### Autotune file size based on workload
+
+- having many small files is not always a problem
+  - it can lead to better data skipping, and help minimize rewrites during MERGE and DELETE
+
+- databricks can auto-tune the file size of delta tables, based on workloads operating on the table
+  - for frequent MERGE, Optimized Writes and Auto Compaction will generate data files < 128 MB. It helps in reducing the duration of further MERGE.
+
 ## Modeling data management solution
 
 ### Upsert from streaming queries using foreachBatch
@@ -77,6 +97,17 @@ def upsertToDelta(microBatchOutputDF, batchId):
   .foreachBatch(upsertToDelta)
   .outputMode("update")
   .start()
-)
 ```
+
+## Data Processing
+
+### Materialized gold tables
+
+- Consider using a view when:
+  - Your **query is not complex**. Because views are computed on demand, the view is re-computed every time the view is queried. So, frequently querying complex queries with joins and subqueries increases compute costs
+  - You want to reduce storage costs. Views do not require additional storage resources.
+
+- Consider using a gold table when:
+  - Multiple downstream queries consume the table, so you want to avoid re-computing complex ad-hoc queries every time.
+  - Query results should be computed incrementally from a data source that is continuously or incrementally growing.
 
