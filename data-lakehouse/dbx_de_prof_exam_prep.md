@@ -99,7 +99,65 @@ def upsertToDelta(microBatchOutputDF, batchId):
   .start()
 ```
 
+### Window functions on streaming dataframe
+
+#### Time-based window
+
+```py
+window("order_timestamp", windowDuration="5 minutes", slideDuration=None)
+```
+
+- If the `slideDuration` is not provided, the windows will be tumbling windows (non-overlapping windows)
+
+#### Non-time-based window
+
+- Non-time-based window operations are not supported on streaming DataFrames, such window operations need to be implemented inside a foreachBatch logic.
+
+```py
+from pyspark.sql.window import Window
+
+def batch_upsert(microBatchDF, batchId):
+  window = Window.partitionBy("customer_id").orderBy(F.col("row_time").desc())
+
+  (microBatchDF.filter(F.col("row_status").isin(["insert", "update"]))
+               .withColumn("rank", F.rank().over(window))
+               .filter("rank == 1")
+               .drop("rank")
+               .createOrReplaceTempView("ranked_updates"))
+
+  query = """
+    MERGE INTO customer_silver c
+    USING ranked_updates r
+    ON c.customer_id = r.customer_id
+      WHEN MATCHED AND c.row_time < r.row_time
+        THEN UPDATE SET *
+      WHEN NOT MATCHED
+        THEN INSERT *
+  """
+
+  microBatchDF.sparkSession.sql(query)
+
+query = (spark.readStream
+               .table("bronze")
+             .writeStream
+               .foreachBatch(batch_upsert)
+               .option("checkpointLocation", "")
+               .trigger(availableNow=True)
+               .start())
+query.awaitTermination()
+```
+
 ## Data Processing
+
+### Stream-stream join
+
+- Spark buffers past inputs as a streaming state for both input streams so that it can match every future input with past inputs. This state can be limited by using watermarks.
+
+![](https://www.databricks.com/wp-content/uploads/2018/03/image4.png)
+
+### Stream-static join
+
+- the latest version of the static delta table is returned each time it is queried in a join operation with a data stream.
 
 ### Materialized gold tables
 
