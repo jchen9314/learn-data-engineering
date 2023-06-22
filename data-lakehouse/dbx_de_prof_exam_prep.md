@@ -221,3 +221,8 @@ spark.read
   - Multiple downstream queries consume the table, so you want to avoid re-computing complex ad-hoc queries every time.
   - Query results should be computed incrementally from a data source that is continuously or incrementally growing.
 
+## Monitoring and logging
+
+### driver log -> Ganglia UI
+
+- Cluster load, memory, CPU, network
