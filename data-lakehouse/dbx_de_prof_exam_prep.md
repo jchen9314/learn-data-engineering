@@ -22,6 +22,15 @@
     | Resize cluster                              |                |               |             | x          |
     | Modify permissions                          |                |               |             | x          |
 
+### Job permission
+- Groups cannot be owners of jobs, must be an individual user
+
+### Secret access permission
+
+- MANAGE: allow to change ACLs, and read and write to this secret scope
+- WRITE: allow to read and write to this secret scope
+- READ: allow to read this secret scope and list what secrets are available
+
 ### Set Operators
 - INTERSECT, UNION, EXCEPT
 - When chaining set operations INTERSECT has a higher precedence than UNION and EXCEPT.
@@ -32,6 +41,10 @@
   - DISTINCT is the default option, duplicate rows are removed from subquery1 before applying the operation
 - You can specify MINUS as a syntax alternative for EXCEPT.
 
+### Table deletion
+
+- deleting data does not delete the data files from the table directory. Instead, it creates a copy of the affected files without these deleted records. So, to fully commit these deletes, you need to run VACUUM commands on the customers table.
+
 ## Testing and Deployment
 
 ### Magic command
@@ -39,6 +52,11 @@
 - %sh: it executes shell code only on the local driver machine which leads to significant performance overhead; it runs only on the Apache Spark driver, not on the worker nodes.
 
 ## Improving performance
+
+### Partitioning
+
+- Choosing partitioning columns: it's good to consider the fact that records with a given value (the activities of a given user) will continue to arrive indefinitely. In such a case, we use a datetime column for partitioning.
+- Data that is over-partitioned or incorrectly partitioned will suffer greatly. Files cannot be combined or compacted across partition boundaries, so partitioned small tables increase storage costs and total number of files to scan. This leads to slowdowns for most general queries. Such an issue requires a full rewrite of all data files to remedy.
 
 ### Data skipping
 
@@ -148,6 +166,40 @@ query.awaitTermination()
 ```
 
 ## Data Processing
+
+### CDF
+
+```py
+# Newly updated records will be appeneded to the target table
+spark.readStream
+        .option("readChangeFeed", "true")
+        .option("startingVersion", 0)
+        .table ("customers")
+        .filter (col("_change_type").isin(["update_postimage"]))
+    .writeStream
+        .option ("checkpointLocation", "dbfs:/checkpoints")
+        .trigger (availableNow=True)
+        .table("customers_updates")
+
+# Entire history of updated records will overwrite the target table at each execution
+spark.read
+        .option("readChangeFeed", "true")
+        .option("startingVersion", 0)
+        .table ("customers")
+        .filter(col("_change_type").isin(["update_postimage"]))
+    .write
+        .mode(“overwrite”)
+        .table("customers_updates")
+```
+
+- when to use CDF
+
+| Yes                                                  | No                                              |
+|:------------------------------------------------------|:-------------------------------------------------|
+| Delta changes include updates and/or deletes         | Delta changes are append only                   |
+| Small fraction of records updated in each batch      | Most records in the table updated in each batch |
+| Data received from external sources is in CDC format | Data received comprises destructive load        |
+| Send data changes to downstream application          | Find and ingest data outside of the Lakehouse   |
 
 ### Stream-stream join
 
