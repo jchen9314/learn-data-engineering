@@ -65,6 +65,7 @@
   - total number of records
   - min, max value in each column of the first 32 columns of the table
   - null value counts in each column of the first 32 columns of the table
+  - Nested fields count when determining the first 32 columns (4 struct fields with 8 nested fields will total to the 32 columns)
 - transaction logs: json files + parquet checkpoint files every 10 commits to accelerate the resolution of the current table state
 
 ### Auto Optimize (2 complementary operations)
