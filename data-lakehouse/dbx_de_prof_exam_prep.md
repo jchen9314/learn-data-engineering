@@ -89,6 +89,10 @@
 
 ## Modeling data management solution
 
+### Streaming dedup
+
+To perform streaming deduplication, we use dropDuplicates() function to eliminate duplicate records within each new micro batch. In addition, we need to ensure that records to be inserted are not already in the target table. We can achieve this using insert-only merge.
+
 ### Upsert from streaming queries using foreachBatch
 
 ```py
