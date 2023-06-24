@@ -86,6 +86,14 @@ WHERE
 - 2 POST requests (same job) to the endpoint ‘api/2.1/jobs/create’: 2 jobs with the same name created in the workspace but has different job_id
 - For each run, it has a unique run_id, and for each task, there is also a unique run_id
 
+### Retry policies on streaming jobs
+
+- **Retries: Set to Unlimited**.
+- **Maximum concurrent runs: Set to 1**. There must be only one instance of each query concurrently active.
+- Cluster: Set this always to use a new job cluster and use the latest Spark version (or at least version 2.1). Queries started in Spark 2.1 and above are recoverable after query and Spark version upgrades.
+- Schedule: Do not set a schedule.
+- Timeout: Do not set a timeout. Streaming queries run for an indefinitely long time.
+
 ## Improving performance
 
 ### Partitioning
@@ -264,6 +272,10 @@ spark.read
 | Small fraction of records updated in each batch      | Most records in the table updated in each batch |
 | Data received from external sources is in CDC format | Data received comprises destructive load        |
 | Send data changes to downstream application          | Find and ingest data outside of the Lakehouse   |
+
+- change data storage
+  - databricks records change data for UPDATE, DELETE, and MERGE in \_change\_data folder under table dir
+  - \_change\_data folder follow the retention policy of the table. Therefore, if you run the VACUUM command, change data feed data is also deleted
 
 ### Stream-stream join
 
