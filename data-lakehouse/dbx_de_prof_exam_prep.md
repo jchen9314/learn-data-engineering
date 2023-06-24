@@ -94,6 +94,28 @@
 
 To perform streaming deduplication, we use dropDuplicates() function to eliminate duplicate records within each new micro batch. In addition, we need to ensure that records to be inserted are not already in the target table. We can achieve this using insert-only merge.
 
+### Streaming ignore updates and deletes
+
+Suppose you have a table user_events with date, user_email, and action columns that is partitioned by date. You stream out of the user_events table and you need to delete data from it due to GDPR.
+
+if you are using this table as a streaming source, deleting data breaks the append-only requirement of streaming sources, which makes the table no more streamable. To avoid this
+
+When you **delete at partition boundaries** (that is, the WHERE is on a partition column): 
+
+```py
+spark.readStream.format("delta")
+  .option("ignoreDeletes", "true")
+  .load("/tmp/delta/user_events")
+```
+
+if you have to delete data in multiple partitions (in this example, filtering on user_email):
+
+```py
+spark.readStream.format("delta")
+  .option("ignoreChanges", "true")
+  .load("/tmp/delta/user_events")
+```
+
 ### Upsert from streaming queries using foreachBatch
 
 ```py
@@ -226,6 +248,15 @@ spark.read
 - Consider using a gold table when:
   - Multiple downstream queries consume the table, so you want to avoid re-computing complex ad-hoc queries every time.
   - Query results should be computed incrementally from a data source that is continuously or incrementally growing.
+
+### Cloning
+
+- Shallow clone: does not copy the data files to the clone target, only copy the metadata
+- Deep clone
+  - copies the source table data to the clone target in addition to the metadata of the existing table
+  - stream metadata is also cloned such that a stream that writes to the Delta table can be stopped on a source table and continued on the target of a clone from where it left off
+  - can sync changes
+- Any changes made to either deep or shallow clones affect only the clones themselves and not the source table.
 
 ## Monitoring and logging
 
