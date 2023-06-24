@@ -81,6 +81,11 @@ WHERE
 
 - %sh: it executes shell code only on the local driver machine which leads to significant performance overhead; it runs only on the Apache Spark driver, not on the worker nodes.
 
+### Job API
+
+- 2 POST requests (same job) to the endpoint ‘api/2.1/jobs/create’: 2 jobs with the same name created in the workspace but has different job_id
+- For each run, it has a unique run_id, and for each task, there is also a unique run_id
+
 ## Improving performance
 
 ### Partitioning
