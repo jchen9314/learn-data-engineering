@@ -102,6 +102,7 @@ WHERE
   - null value counts in each column of the first 32 columns of the table
   - Nested fields count when determining the first 32 columns (4 struct fields with 8 nested fields will total to the 32 columns)
 - transaction logs: json files + parquet checkpoint files every 10 commits to accelerate the resolution of the current table state
+- Statistics are generally uninformative for string fields with very high cardinality (such as free text fields), you need to omit these fields from statistics collection by setting them later in the schema after the first 32 columns
 
 ### Auto Optimize (2 complementary operations)
 
