@@ -288,6 +288,7 @@ spark.read
 ### Cloning
 
 - Shallow clone: does not copy the data files to the clone target, only copy the metadata
+  - Running the VACUUM command on the source table may purge data files referenced in the transaction log of the clone. If shallow clone, you will get an error when querying the clone indicating that some data files are no longer present.
 - Deep clone
   - copies the source table data to the clone target in addition to the metadata of the existing table
   - stream metadata is also cloned such that a stream that writes to the Delta table can be stopped on a source table and continued on the target of a clone from where it left off
