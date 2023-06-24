@@ -293,3 +293,9 @@ spark.read
 ### driver log -> Ganglia UI
 
 - Cluster load, memory, CPU, network
+
+### Spark UI summary metric
+
+- Usually, if your computation was completely symmetric across tasks, you would see all of the statistics clustered tightly around the 50th percentile value.
+- if we have a bunch of “Min” values near zero. This suggests that we have almost empty partitions
+
