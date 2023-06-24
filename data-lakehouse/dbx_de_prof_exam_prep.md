@@ -45,6 +45,36 @@
 
 - deleting data does not delete the data files from the table directory. Instead, it creates a copy of the affected files without these deleted records. So, to fully commit these deletes, you need to run VACUUM commands on the customers table.
 
+### Dynamic view
+#### column control
+
+- only admin can see values in the email column
+
+```sql
+CREATE OR REPLACE VIEW customers_vw AS
+SELECT
+  customer_id,
+  CASE
+    WHEN IS_MEMBER('admin') THEN email
+    ELSE 'REDACTED'
+  END AS email
+FROM customers_silver
+```
+
+#### row control
+
+- admin can view all the data whereas others can only view a subset of the data
+
+```sql
+CREATE OR REPLACE VIEW customers_fr_vw AS
+SELECT * FROM customers_vw
+WHERE
+  CASE
+    WHEN is_member('admin') THEN TRUE
+    ELSE country = 'China' and row_time >= '2023-06-23'
+  END
+```
+
 ## Testing and Deployment
 
 ### Magic command
