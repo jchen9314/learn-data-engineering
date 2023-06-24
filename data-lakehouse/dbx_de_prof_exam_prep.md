@@ -274,6 +274,7 @@ spark.read
 ### Stream-static join
 
 - the latest version of the static delta table is returned each time it is queried in a join operation with a data stream.
+- In stream-static join, the streaming portion of this join drives this join process. So, only new data appearing on the streaming side of the join will trigger the processing. However, adding new records into the static table will not automatically trigger updates to the results of the stream-static join.
 
 ### Materialized gold tables
 
