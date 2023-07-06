@@ -51,6 +51,22 @@
 
 ### LLM Applications
 
+- LLM flavors
+  - Open-source models
+    - use as off-the-shelf or fine-tuned
+    - provides flexibility for customization
+    - can be smaller in size to save cost
+    - commercial/non-commercial use
+  - Proprietary models
+    - usually offered as LLMs-as-a-service
+    - some can be fine-tuned
+    - restrictive licenses for usage and modification
+- Design criteria
+  - privacy
+  - quality
+  - cost
+  - latency
+
 ### Generative AI with Databricks ML
 
 ### AI Adoption Preparation
