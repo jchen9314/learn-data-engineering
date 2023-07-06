@@ -34,16 +34,17 @@
     - decoder
   - Common LLM tasks
 
-    | Task                              	| Description                                                                                                                                                	|
-|:-----------------------------------	|:------------------------------------------------------------------------------------------------------------------------------------------------------------	|
-| Content creation and augmentation 	| Generating coherent and contextually relevant text. LLMs excel at tasks like text completion, creative writing, story generation, and dialogue generation. 	|
-| Summarization                     	| Summarizing long documents or articles into concise summaries. LLMs provide an efficient way to extract key info from large volume of text.                	|
-| Question answering                	| Comprehend questions and provide relevant answers by extracting info from their pre-trained knowledge.                                                     	|
-| Machine translation               	| Auto converting a text from one language to another. LLMs can explain language structure like grammatical rules                                            	|
-| Classification                    	| Categorizing text into predefined classes or topics. LLLs are useful for tasks like topic classification, spam detection, or sentiment analysis            	|
-| Named Entity Recognition          	| Identifying and extracting named entities like names of persons, organizations, locations, dates, and more from text                                       	|
-| Tone/level of content             	| Adjusting the text's tone (professional, humorous, etc.) or complexity level (eg. fourth-grade level)                                                      	|
-| Code generation                   	| Generating code in a specified programming language or converting code from one language to another                                                        	|
+    | Task                              	| Description                                                                                                                                            |
+|:-----------------------------------	|:-----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Content creation and augmentation 	| Generating coherent and contextually relevant text. LLMs excel at tasks like text completion, creative writing, story generation, and dialogue generation. |
+| Summarization                     	| Summarizing long documents or articles into concise summaries. LLMs provide an efficient way to extract key info from large volume of text.                |
+| Question answering                	| Comprehend questions and provide relevant answers by extracting info from their pre-trained knowledge.                                                     |
+| Machine translation               	| Auto converting a text from one language to another. LLMs can explain language structure like grammatical rules                                            |
+| Classification                    	| Categorizing text into predefined classes or topics. LLLs are useful for tasks like topic classification, spam detection, or sentiment analysis            |
+| Named Entity Recognition          	| Identifying and extracting named entities like names of persons, organizations, locations, dates, and more from text                                       |
+| Tone/level of content             	| Adjusting the text's tone (professional, humorous, etc.) or complexity level (eg. fourth-grade level)                                                      |
+| Code generation                   	| Generating code in a specified programming language or converting code from one language to another                                                        |
+
 - Foundation model (GPT-4, BART, MPT-7B etc.): large ML model trained on vast amount of data and fine-tuned for more specific language understanding and generation tasks
 
 ## Finding Success with Generative AI
