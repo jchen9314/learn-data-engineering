@@ -34,7 +34,7 @@
     - decoder
   - Common LLM tasks
 
-    | Task                              	| Description                                                                                                                                            |
+| Task                              	| Description                                                                                                                                            |
 |:-----------------------------------	|:-----------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Content creation and augmentation 	| Generating coherent and contextually relevant text. LLMs excel at tasks like text completion, creative writing, story generation, and dialogue generation. |
 | Summarization                     	| Summarizing long documents or articles into concise summaries. LLMs provide an efficient way to extract key info from large volume of text.                |
