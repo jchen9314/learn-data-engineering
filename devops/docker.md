@@ -11,7 +11,9 @@
 ### Containerization
 
 - purpose: run applications in an bug-free environment without worrying about different OS, dependencies, and configurations
-- container: packages the application with all its dependencies and configuration files
+- container:
+  - Analogy: containers are more like laptops (everything I need to use is packaged in one device and it's portable, can run it anywhere) than desktops (have to set up and manage external components, mouse, keyboard, etc and it's not very portable).
+  - container puts everything your software needs (OS, code, dependencies, config files) into one portable package
 - containerization platform: docker, kubernetes
 
 ### Virtualizatiton vs Containerization
